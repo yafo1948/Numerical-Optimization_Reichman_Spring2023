@@ -1,13 +1,12 @@
 import numpy as np
 
 class LineSearchSolver:
-    wolfe_cons = 0.01
-    backtrack_cons = 0.5
+    
 
     def __init__(self, method) -> None:
         self.method = method
 
-    def minimize(self, f, x0, step_len, obj_tol, param_tol, max_iter):
+    def minimize(self, f, x0, obj_tol, param_tol, max_iter):
 
         x = x0
         f_x, g_x, h_x = f(x, True)
@@ -31,7 +30,8 @@ class LineSearchSolver:
 
             if self.method == "Newton":
                 direx = np.linalg.solve(h_x, -g_x)
-                _lambda = np.matmul(direx.transpose(), np.matmul(h_x, direx)) ** 0.5
+                _lambda = np.matmul(direx.T, np.matmul(h_x, direx)) ** 0.5
+                alpha = self.get_step(f, direx, x)
                 if 0.5 * (_lambda ** 2) < obj_tol:
                     return x, f_x, x_hist, f_x_hist, True
 
@@ -39,8 +39,8 @@ class LineSearchSolver:
                 f_prev, g_x, h_x = f(x_prev, False)
                 
                 direx = -np.linalg.solve(B, g_x)
-                step_size = self.get_step(f, direx, x_prev)
-                x = x_prev + direx * step_size
+                alpha = self.get_step(f, direx, x_prev)
+                x = x_prev + direx * alpha
                 f_x, g_next, h_x = f(x, False)
 
                 s = x - x_prev
@@ -60,11 +60,11 @@ class LineSearchSolver:
             if iter != 0 and (f_prev - f_x < obj_tol):
                 return x, f_x, x_hist, f_x_hist, True
 
-            if step_len == "wolfe":
-                alpha = self.get_step(f, direx, x)
+            # if step_len == "wolfe":
+            #     alpha = self.get_step(f, direx, x)
 
-            else:
-                alpha = step_len
+            # else:
+            #     alpha = step_len
 
             x_prev = x
             f_prev = f_x
@@ -86,9 +86,12 @@ class LineSearchSolver:
         return x, f_x, x_hist, f_x_hist, False
 
     def get_step(self, f, direx, x) -> int:
+        wolfe_cons = 0.01
+        backtrack_cons = 0.5
+        
         alpha = 1
 
-        while f(x + alpha * direx, False)[0] > f(x, False)[0] + self.wolfe_cons * alpha * np.matmul(f(x, False)[1].transpose(), direx):
-            alpha = alpha * self.backtrack_cons
+        while f(x + alpha * direx, False)[0] > f(x, False)[0] + wolfe_cons * alpha * np.matmul(f(x, False)[1].transpose(), direx):
+            alpha = alpha * backtrack_cons
 
         return alpha
