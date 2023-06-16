@@ -5,27 +5,23 @@ from math import e
 def Q1_circle(x, hess):
     Q = np.array([[1, 0], [0, 1]])
 
-    # f = np.matmul(x.transpose(), np.matmul(Q, x))
-    # g = 2 * np.matmul(Q, x)
-    f = np.dot(x, Q.dot(x)) #x.T? 
+    f = np.dot(x, Q.dot(x))
     g = 2 * Q.dot(x)
     if hess:
         return f, g, 2 * Q
 
-    return f, g
+    return f, g, None
 
 
 def Q2_ellipse(x, hess):
     Q = np.array([[1, 0], [0, 100]])
 
-    # f = np.matmul(x.transpose(), np.matmul(Q, x))
-    # g = 2 * np.matmul(Q, x)
-    f = np.dot(x, Q.dot(x)) #x.T? 
+    f = np.dot(x, Q.dot(x))
     g = 2 * Q.dot(x)
     if hess:
         return f, g, 2 * Q
 
-    return f, g
+    return f, g, None
 
 
 def Q3_rot_ellipse(x, hess):
@@ -33,15 +29,13 @@ def Q3_rot_ellipse(x, hess):
     Q = np.array([[100, 0], [0, 1]])
     Q = W.T @ Q @ W
 
-    # value = np.matmul(x.transpose(), np.matmul(Q, x))
-    # grad = 2 * np.matmul(Q, x)
     f = np.dot(x, Q.dot(x))
     g = 2 * Q.dot(x)
     
     if hess:
         return f, g, 2 * Q
 
-    return f, g
+    return f, g, None
 
 
 def Rosenbrock(x, hess):
@@ -56,7 +50,7 @@ def Rosenbrock(x, hess):
         )
         return f, g.T, h
 
-    return f, g.T
+    return f, g.T, None
 
 
 def linear(x, hess):
@@ -69,7 +63,7 @@ def linear(x, hess):
     if hess:
         return f, g, 0
 
-    return f, g
+    return f, g, None
 
 
 def exp_tri(x, hess):
@@ -87,5 +81,5 @@ def exp_tri(x, hess):
         )
         return f, g.T, h
 
-    return f, g.T
+    return f, g.T, None
 

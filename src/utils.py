@@ -55,7 +55,7 @@ def contour(f, x_hist_gd, x_hist_nm, x_hist_bfgs, x_hist_sr1, x_limit, y_limit, 
     plt.show()
 
 
-def plot(fx_hist_gd, fx_hist_nm, fx_hist_bfgs, fx_hist_sr1):
+def plot(fx_hist_gd, fx_hist_nm, fx_hist_bfgs, fx_hist_sr1, title):
     i = 0
     iter_gd = []
     for i in range(len(fx_hist_gd)):
@@ -72,11 +72,13 @@ def plot(fx_hist_gd, fx_hist_nm, fx_hist_bfgs, fx_hist_sr1):
     iter_sr1 = []
     for i in range(len(fx_hist_sr1)):
         iter_sr1.append(i)
+
     plt.plot(iter_gd, fx_hist_gd, label="Gradient Descent")
     plt.plot(iter_nm, fx_hist_nm, label="Newton Method")
 
     plt.plot(iter_bfgs, fx_hist_bfgs, label="BFGS")
     plt.plot(iter_sr1, fx_hist_sr1, label="sr1")
+    plt.title(label=title)
     plt.legend()
     plt.show()
 
