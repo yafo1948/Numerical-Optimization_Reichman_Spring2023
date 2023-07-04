@@ -1,6 +1,11 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+from mpl_toolkits.mplot3d import Axes3D
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+import matplotlib.pyplot as plt
+import warnings
+
 def contour(f, x_hist_gd, x_hist_nm, x_hist_bfgs, x_hist_sr1, x_limit, y_limit, title):
 
     x_p_gd = []*len(x_hist_gd)
@@ -83,8 +88,86 @@ def plot(fx_hist_gd, fx_hist_nm, fx_hist_bfgs, fx_hist_sr1, title):
     plt.show()
 
 
+def plot_iterations(
+    title, obj_values_1=None, obj_values_2=None, label_1=None, label_2=None
+):
+
+    fig, ax = plt.subplots()
+    if obj_values_1 is not None:
+        ax.plot(range(len(obj_values_1)), obj_values_1, label=label_1)
+
+    if obj_values_2 is not None:
+        ax.plot(range(len(obj_values_2)), obj_values_2, label=label_2)
+
+    ax.legend()
+    ax.set_title(title)
+    ax.set_xlabel("# iterations")
+    ax.set_ylabel("Objective function value")
+    plt.show()
 
 
+def plot_feasible_set_2d(path_points):
+    # plot the feasible region
+    d = np.linspace(-2, 4, 300)
+    x, y = np.meshgrid(d, d)
+    plt.imshow(
+        ((y >= -x + 1) & (y <= 1) & (x <= 2) & (y >= 0)).astype(int),
+        extent=(x.min(), x.max(), y.min(), y.max()),
+        origin="lower",
+        cmap="Greys",
+        alpha=0.3,
+    )
+
+    # plot the lines defining the constraints
+    x = np.linspace(0, 4, 2000)
+    # y >= -x + 1
+    y1 = -x + 1
+    # y <= 1
+    y2 = np.ones(x.size)
+    # y >= 0
+    y3 = np.zeros(x.size)
+
+    if path_points is not None:
+        x_path = [path_points[i][0] for i in range(len(path_points))]
+        y_path = [path_points[i][1] for i in range(len(path_points))]
+
+    # Make plot
+    plt.plot(x, y1)
+    plt.plot(x, y2)
+    plt.plot(x, y3)
+    plt.plot(np.ones(x.size) * 2, x)
+    plt.plot(
+        x_path,
+        y_path,
+        label="algorithm's path",
+        color="k",
+        marker=".",
+        linestyle="--",
+    )
+    plt.xlim(0, 3)
+    plt.ylim(0, 2)
+    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.0)
+    plt.xlabel(r"$x$")
+    plt.ylabel(r"$y$")
+    plt.suptitle('Feasible region and path 2D')
+    plt.show()
+
+
+def plot_feasible_regions_3d(path):
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    path = np.array(path)
+
+    ax.plot_trisurf([1, 0, 0], [0, 1, 0], [0, 0, 1], color='lightgray', alpha=0.5)
+    ax.plot(path[:, 0], path[:, 1], path[:, 2], label='Path')
+    ax.scatter(path[-1][0], path[-1][1], path[-1][2], s=50, c='gold', marker='o', label='Final candidate')
+    ax.set_title("Feasible Regions and Path")
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_zlabel('z')
+    plt.legend()
+    ax.view_init(45, 45)
+    plt.show()
 
 
 
